@@ -3,12 +3,18 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/research", label: "Committee" },
-    { to: "/team", label: "Call for Papers" },
-    { to: "/preview", label: "Call for PhD Forum" },
-    { to: "/registration", label: "Registration" },
-    { to: "/speakers", label: "Speakers" },
-    { to: "/programme", label: "Programme" },
+    { to: "/about", label: "About" },
+    { to: "/analytics", label: "Analytics" },
+    {
+      to: "/beypark-android.apk",
+      label: "Download",
+      isDownload: true,
+    },
+    {
+      to: "https://www.instagram.com/beyporeinternationalwaterfest/?hl=en",
+      label: "Beypore Fest",
+      isExternal: true,
+    },
   ];
 
   return (
@@ -25,37 +31,64 @@ export default function Footer() {
 
       <div className="fixed inset-0 bg-black bg-opacity-30 z-0" />
 
-      <div className="absolute bottom-3 md:bottom-0 w-full flex flex-col text-white text-left px-5 py-2 md:px-20 md:py-10">
-        <div className="mb-[3vh]">
-          <p className="text-[3rem] md:text-6xl font-semibold translate-y-4 md:translate-y-0">
-            ASCAT 2026
-          </p>
-          <p className="text-[2.3rem] md:text-4xl font-semibold">NIT Calicut</p>
-          <p className="text-[1.5rem] md:text-3xl font-semibold -translate-y-2 md:translate-y-0">
-            Mar 06 - Mar 08 2026
-          </p>
+      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col text-white px-6 pb-4 md:px-20 md:pb-10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 md:mb-12">
+          <Link to="/" className="flex flex-col items-start mb-8 md:mb-0 group">
+            <p className="text-[1.5rem] md:text-[1.42rem] font-extrabold translate-y-7 md:translate-y-3 translate-x-[1px]">
+              Parking made simple.
+            </p>
+            <p className="text-[4rem] md:text-6xl font-extrabold ">BeyPark</p>
+          </Link>
 
-          <nav className="flex flex-wrap flex-col md:flex-row justify-left gap-2 md:gap-6 mt-3 text-md md:text-xl font-semibold">
-            {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="hover:underline">
-                {link.label}
-              </Link>
-            ))}
+          <nav className="flex flex-col md:flex-row md:items-center gap-3 md:gap-8 text-base md:text-lg font-bold">
+            {navLinks.map((link) => {
+              if (link.isDownload) {
+                return (
+                  <a
+                    key={link.label}
+                    href={link.to}
+                    download="BeyPark_App.apk"
+                    className="hover:text-gray-200 transition-colors cursor-pointer"
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+
+              if (link.isExternal) {
+                return (
+                  <a
+                    key={link.label}
+                    href={link.to}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gray-200 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="hover:text-gray-200 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
-        <div className="border-t border-gray-300 opacity-50" />
+        <div className="w-full h-px bg-white/40 mb-4" />
 
-        <div className="flex justify-between items-center py-2 text-xs">
+        <div className="flex justify-between items-center text-xs md:text-sm opacity-80">
           <span>© {new Date().getFullYear()} NIT Calicut</span>
-          <a
-            href=""
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Credits{" "}
-          </a>
+          <Link to="/credits" className="hover:underline">
+            Credits
+          </Link>
         </div>
       </div>
     </footer>

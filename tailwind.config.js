@@ -4,8 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        patrick: ['"Patrick Hand"', "cursive"],
-        googlesanscode: ['"Google Sans Code"', "monospace"],
+        poppins: ["Poppins", "sans-serif"],
       },
     },
   },
