@@ -11,3 +11,12 @@ body,
   background-color: white;
   font-family: "Poppins", sans-serif;
 }
+
+.leaflet-popup-content a {
+  color: white !important;
+  text-decoration: none;
+}
+
+.leaflet-popup-content a:hover {
+  color: #e5e7eb;
+}

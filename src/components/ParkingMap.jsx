@@ -1,32 +1,176 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { ref, onValue } from "firebase/database";
+import { db } from "../helpers/Firebase";
+
+const getStatusColor = (occupied, capacity) => {
+  if (!capacity || capacity === 0) return "text-gray-500";
+  const percentage = (occupied / capacity) * 100;
+
+  if (percentage >= 90) return "text-red-600";
+  if (percentage >= 70) return "text-amber-500";
+  return "text-green-600";
+};
+
+function MapController({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 16, { duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+}
+
+function CustomZoomControl() {
+  const map = useMap();
+
+  return (
+    <div className="absolute top-4 right-4 z-[400] flex flex-col bg-white border-[2.5px] border-black rounded-lg shadow-sm overflow-hidden">
+      <button
+        onClick={() => map.zoomIn()}
+        className="p-2 hover:bg-gray-100 border-b-[2.5px] border-black transition-colors flex items-center justify-center w-9 h-9"
+        aria-label="Zoom In"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={3}
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 4.5v15m7.5-7.5h-15"
+          />
+        </svg>
+      </button>
+
+      <button
+        onClick={() => map.zoomOut()}
+        className="p-2 hover:bg-gray-100 transition-colors flex items-center justify-center w-9 h-9"
+        aria-label="Zoom Out"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={3}
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+const parkingIcon = L.divIcon({
+  className: "custom-parking-icon",
+  html: `
+    <div style="
+      background-color: black; 
+      color: white; 
+      width: 36px; 
+      height: 36px; 
+      border-radius: 8px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      border: 2px solid white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    ">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>
+      </svg>
+    </div>
+  `,
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -40],
+});
 
 export default function ParkingMap() {
   const [isOpen, setIsOpen] = useState(false);
+  const [locations, setLocations] = useState([]);
+  const [mapCenter, setMapCenter] = useState([11.2588, 75.7804]);
+  const [loading, setLoading] = useState(true);
 
-  const locations = ["CCD Parking", "Beach Road", "Beypore"];
+  useEffect(() => {
+    const lotsRef = ref(db, "/locations");
+
+    const unsubscribe = onValue(lotsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      const validLots = [];
+      let totalLat = 0;
+      let totalLng = 0;
+
+      Object.keys(data).forEach((deviceId) => {
+        const device = data[deviceId];
+        if (device.config && device.config.parking_lots) {
+          Object.keys(device.config.parking_lots).forEach((lotId) => {
+            const config = device.config.parking_lots[lotId];
+            const live = device.live_status?.[lotId]?.occupancy || {};
+
+            if (config.master_node === undefined) {
+              const lat = parseFloat(config.lat);
+              const lng = parseFloat(config.long);
+
+              if (!isNaN(lat) && !isNaN(lng)) {
+                validLots.push({
+                  id: `${deviceId}_${lotId}`,
+                  name: config.display_name || lotId,
+                  lat: lat,
+                  lng: lng,
+                  cap_car: config.capacities?.car || 0,
+                  cap_bike: config.capacities?.bike || 0,
+                  occ_car: live.car_occupancy || 0,
+                  occ_bike: live.bike_occupancy || 0,
+                });
+
+                totalLat += lat;
+                totalLng += lng;
+              }
+            }
+          });
+        }
+      });
+
+      setLocations(validLots);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <div className="relative w-full h-[50vh] md:h-[60vh] mt-2 rounded-xl border-[3px] border-black overflow-hidden shadow-sm bg-gray-100">
+    <div className="relative w-full h-[50vh] md:h-[60vh] mt-2 rounded-xl border-[3px] border-black overflow-hidden shadow-sm bg-gray-100 z-0">
       <div
-        className={`absolute top-4 left-4 z-[400] bg-white border-[2.5px] border-black rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out flex flex-col ${
-          isOpen ? "max-h-64 w-48" : "max-h-[38px] w-32"
+        className={`absolute top-4 left-4 z-[1000] bg-white border-[2.5px] border-black rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col ${
+          isOpen ? "max-h-[300px] w-56" : "max-h-[38px] w-36"
         }`}
       >
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between px-4 py-1.5 bg-white hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-1.5 bg-white hover:bg-gray-50 transition-colors shrink-0"
         >
           <span className="font-bold text-sm">Locations</span>
-
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
             className={`w-4 h-4 ml-2 transition-transform duration-300 ${
               isOpen ? "rotate-180" : "rotate-0"
             }`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
           >
             <path
               strokeLinecap="round"
@@ -36,25 +180,109 @@ export default function ParkingMap() {
           </svg>
         </button>
 
-        <div className="flex flex-col px-1 pb-2">
-          {locations.map((loc, index) => (
+        <div className="flex flex-col px-1 pb-2 overflow-y-auto custom-scrollbar">
+          {locations.map((loc) => (
             <button
-              key={index}
-              className="text-left px-3 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors"
+              key={loc.id}
+              className="text-left px-3 py-2 text-sm font-medium hover:bg-gray-100 rounded-md transition-colors truncate border-b last:border-0 border-gray-100"
               onClick={() => {
-                console.log(`Selected: ${loc}`);
+                setMapCenter([loc.lat, loc.lng]);
+                setIsOpen(false);
               }}
             >
-              {loc}
+              {loc.name}
             </button>
           ))}
         </div>
       </div>
 
-      {/* placeholder need to put map here */}
-      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-        <p className="text-gray-500 font-semibold">Map Loading...</p>
-      </div>
+      {loading ? (
+        <div className="w-full h-full flex items-center justify-center bg-gray-200 animate-pulse">
+          <p className="text-gray-500 font-bold">Loading Live Map...</p>
+        </div>
+      ) : (
+        <MapContainer
+          center={mapCenter}
+          zoom={15}
+          style={{ height: "100%", width: "100%" }}
+          zoomControl={false}
+        >
+          <TileLayer
+            attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          <MapController center={mapCenter} />
+
+          <CustomZoomControl />
+
+          {locations.map((loc) => {
+            const carAvailable = Math.max(0, loc.cap_car - loc.occ_car);
+            const bikeAvailable = Math.max(0, loc.cap_bike - loc.occ_bike);
+
+            return (
+              <Marker
+                key={loc.id}
+                position={[loc.lat, loc.lng]}
+                icon={parkingIcon}
+              >
+                <Popup className="font-poppins min-w-[200px]">
+                  <div className="p-1">
+                    <h3 className="font-extrabold text-lg mb-2 border-b pb-1">
+                      {loc.name}
+                    </h3>
+
+                    <div className="space-y-2 mb-3">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="font-bold text-gray-700">
+                          Car Slots:
+                        </span>
+                        <span
+                          className={`font-bold ${getStatusColor(
+                            loc.occ_car,
+                            loc.cap_car
+                          )}`}
+                        >
+                          {carAvailable}{" "}
+                          <span className="text-black font-normal">
+                            / {loc.cap_car}
+                          </span>
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="font-bold text-gray-700">
+                          Bike Slots:
+                        </span>
+                        <span
+                          className={`font-bold ${getStatusColor(
+                            loc.occ_bike,
+                            loc.cap_bike
+                          )}`}
+                        >
+                          {bikeAvailable}{" "}
+                          <span className="text-black font-normal">
+                            / {loc.cap_bike}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full text-center bg-black text-white text-xs font-bold py-2 rounded hover:bg-gray-800 transition-colors"
+                    >
+                      Get Directions
+                    </a>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      )}
     </div>
   );
 }
