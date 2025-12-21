@@ -15,7 +15,7 @@ export function Navbar() {
       isExternal: true,
     },
     {
-      to: "/beypark-android.apk",
+      to: "/BeyPark.apk",
       label: "Download App",
       isDownload: true,
       isButton: true,
@@ -47,7 +47,7 @@ export function Navbar() {
                 <a
                   key={link.label}
                   href={link.to}
-                  download="BeyPark_App.apk"
+                  download="BeyPark.apk"
                   className="px-5 py-2.5 bg-black text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-all hover:scale-105 shadow-md"
                 >
                   {link.label}
