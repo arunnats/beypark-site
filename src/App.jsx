@@ -5,6 +5,7 @@ import { Navbar } from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import { useUserStats } from "./helpers/useUserStats"
 
 trefoil.register();
 
@@ -25,6 +26,12 @@ export default function App() {
         setTimeout(() => setLoading(false), 500);
       });
     }
+  }, []);
+
+  const { initializeUserStats } = useUserStats();
+
+  useEffect(() => {
+    initializeUserStats();
   }, []);
 
   return (
