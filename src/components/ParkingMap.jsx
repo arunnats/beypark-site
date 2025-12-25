@@ -124,17 +124,27 @@ export default function ParkingMap() {
               const lng = parseFloat(config.long);
 
               if (!isNaN(lat) && !isNaN(lng)) {
-                validLots.push({
+                // Extract combined flag and relevant capacities
+                const capacities = config.capacities || {};
+                const combined = capacities.combined === true;
+                let lotData = {
                   id: `${deviceId}_${lotId}`,
                   name: config.display_name || lotId,
                   lat: lat,
                   lng: lng,
-                  cap_car: config.capacities?.car || 0,
-                  cap_bike: config.capacities?.bike || 0,
-                  occ_car: live.car_occupancy || 0,
-                  occ_bike: live.bike_occupancy || 0,
-                });
+                  combined: combined,
+                };
+                if (combined) {
+                  lotData.cap_total = capacities.total || 0;
+                  lotData.occ_total = live.net_occupancy || 0;
+                } else {
+                  lotData.cap_car = capacities.car || 0;
+                  lotData.cap_bike = capacities.bike || 0;
+                  lotData.occ_car = live.car_occupancy || 0;
+                  lotData.occ_bike = live.bike_occupancy || 0;
+                }
 
+                validLots.push(lotData);
                 totalLat += lat;
                 totalLng += lng;
               }
@@ -217,69 +227,110 @@ export default function ParkingMap() {
           <CustomZoomControl />
 
           {locations.map((loc) => {
-            const carAvailable = Math.max(0, loc.cap_car - loc.occ_car);
-            const bikeAvailable = Math.max(0, loc.cap_bike - loc.occ_bike);
-
-            return (
-              <Marker
-                key={loc.id}
-                position={[loc.lat, loc.lng]}
-                icon={parkingIcon}
-              >
-                <Popup className="font-poppins min-w-[200px]">
-                  <div className="p-1">
-                    <h3 className="font-extrabold text-lg mb-2 border-b pb-1">
-                      {loc.name}
-                    </h3>
-
-                    <div className="space-y-2 mb-3">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="font-bold text-gray-700">
-                          Car Slots:
-                        </span>
-                        <span
-                          className={`font-bold ${getStatusColor(
-                            loc.occ_car,
-                            loc.cap_car
-                          )}`}
-                        >
-                          {carAvailable}{" "}
-                          <span className="text-black font-normal">
-                            / {loc.cap_car}
+            if (loc.combined) {
+              const totalAvailable = Math.max(0, (loc.cap_total || 0) - (loc.occ_total || 0));
+              return (
+                <Marker
+                  key={loc.id}
+                  position={[loc.lat, loc.lng]}
+                  icon={parkingIcon}
+                >
+                  <Popup className="font-poppins min-w-[200px]">
+                    <div className="p-1">
+                      <h3 className="font-extrabold text-lg mb-2 border-b pb-1">
+                        {loc.name}
+                      </h3>
+                      <div className="space-y-2 mb-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-gray-700">
+                            Total Slots:
                           </span>
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="font-bold text-gray-700">
-                          Bike Slots:
-                        </span>
-                        <span
-                          className={`font-bold ${getStatusColor(
-                            loc.occ_bike,
-                            loc.cap_bike
-                          )}`}
-                        >
-                          {bikeAvailable}{" "}
-                          <span className="text-black font-normal">
-                            / {loc.cap_bike}
+                          <span
+                            className={`font-bold ${getStatusColor(
+                              loc.occ_total || 0,
+                              loc.cap_total || 0
+                            )}`}
+                          >
+                            {totalAvailable}{" "}
+                            <span className="text-black font-normal">
+                              / {loc.cap_total || 0}
+                            </span>
                           </span>
-                        </span>
+                        </div>
                       </div>
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center bg-black text-white text-xs font-bold py-2 rounded hover:bg-gray-800 transition-colors"
+                      >
+                        Get Directions
+                      </a>
                     </div>
-
-                    <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full text-center bg-black text-white text-xs font-bold py-2 rounded hover:bg-gray-800 transition-colors"
-                    >
-                      Get Directions
-                    </a>
-                  </div>
-                </Popup>
-              </Marker>
-            );
+                  </Popup>
+                </Marker>
+              );
+            } else {
+              const carAvailable = Math.max(0, (loc.cap_car || 0) - (loc.occ_car || 0));
+              const bikeAvailable = Math.max(0, (loc.cap_bike || 0) - (loc.occ_bike || 0));
+              return (
+                <Marker
+                  key={loc.id}
+                  position={[loc.lat, loc.lng]}
+                  icon={parkingIcon}
+                >
+                  <Popup className="font-poppins min-w-[200px]">
+                    <div className="p-1">
+                      <h3 className="font-extrabold text-lg mb-2 border-b pb-1">
+                        {loc.name}
+                      </h3>
+                      <div className="space-y-2 mb-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-gray-700">
+                            Car Slots:
+                          </span>
+                          <span
+                            className={`font-bold ${getStatusColor(
+                              loc.occ_car || 0,
+                              loc.cap_car || 0
+                            )}`}
+                          >
+                            {carAvailable}{" "}
+                            <span className="text-black font-normal">
+                              / {loc.cap_car || 0}
+                            </span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-gray-700">
+                            Bike Slots:
+                          </span>
+                          <span
+                            className={`font-bold ${getStatusColor(
+                              loc.occ_bike || 0,
+                              loc.cap_bike || 0
+                            )}`}
+                          >
+                            {bikeAvailable}{" "}
+                            <span className="text-black font-normal">
+                              / {loc.cap_bike || 0}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full text-center bg-black text-white text-xs font-bold py-2 rounded hover:bg-gray-800 transition-colors"
+                      >
+                        Get Directions
+                      </a>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            }
           })}
         </MapContainer>
       )}
