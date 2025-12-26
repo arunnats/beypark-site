@@ -30,7 +30,7 @@ export default function About() {
         </p>
         <h2 className="text-2xl font-bold mt-8 mb-4">Team & Guidance</h2>
         <p className="text-lg text-gray-700 mb-4">
-          BeyPark is developed under the guidance of <span className="font-bold">Dr. Munavar Fairooz C.</span> and <span className="font-bold">Dr. Harikrishna M.</span>, with a core team comprising <span className="font-bold">Arun Natarajan</span>, <span className="font-bold">Hafeez Muhammed</span>, <span className="font-bold">Kamble Aditya Dattatray</span>, <span className="font-bold">Aadil Krishna K.</span> [B.Tech Computer Science and Engineering], <span className="font-bold">Abhina</span>, and <span className="font-bold">Abhiram</span>, bringing together expertise in software engineering, AI, system design, and real-world deployment.
+          BeyPark is developed under the guidance of <span className="font-bold">Dr. Munavar Fairooz C.</span>, <span className="font-bold">Dr. Harikrishna M.</span>,  and <span className="font-bold">Dr. Nishant Mukund Pawar</span> with a core team comprising <span className="font-bold">Arun Natarajan</span>, <span className="font-bold">Hafeez Muhammed</span>, <span className="font-bold">Kamble Aditya Dattatray</span>, <span className="font-bold">Aadil Krishna K.</span> [B.Tech Computer Science and Engineering], <span className="font-bold">Abhina</span>, and <span className="font-bold">Abhiram</span>, bringing together expertise in software engineering, AI, system design, and real-world deployment.
         </p>
       </div>
     </section>
