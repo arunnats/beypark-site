@@ -98,7 +98,7 @@ const parkingIcon = L.divIcon({
 export default function ParkingMap() {
   const [isOpen, setIsOpen] = useState(false);
   const [locations, setLocations] = useState([]);
-  const [mapCenter, setMapCenter] = useState([11.166579, 75.805855]);
+  const [mapCenter, setMapCenter] = useState([11.174071, 75.805574]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
