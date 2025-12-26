@@ -54,7 +54,7 @@ export default function App() {
           loading ? "opacity-0" : "opacity-100"
         }`}
       >
-        <div className="relative z-[20] flex bg-[#f6f7f7] flex-1 mb-[48vh] md:mb-[40vh] rounded-b-2xl overflow-hidden">
+        <div className="relative z-[20] flex bg-[#f6f7f7] flex-1 mb-[52vh] md:mb-[40vh] rounded-b-2xl overflow-hidden">
           <Navbar />
           <main className="flex-1 ">
             <Routes>
