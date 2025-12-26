@@ -98,7 +98,7 @@ const parkingIcon = L.divIcon({
 export default function ParkingMap() {
   const [isOpen, setIsOpen] = useState(false);
   const [locations, setLocations] = useState([]);
-  const [mapCenter, setMapCenter] = useState([11.2588, 75.7804]);
+  const [mapCenter, setMapCenter] = useState([11.166579, 75.805855]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -228,7 +228,10 @@ export default function ParkingMap() {
 
           {locations.map((loc) => {
             if (loc.combined) {
-              const totalAvailable = Math.max(0, (loc.cap_total || 0) - (loc.occ_total || 0));
+              const totalAvailable = Math.max(
+                0,
+                (loc.cap_total || 0) - (loc.occ_total || 0)
+              );
               return (
                 <Marker
                   key={loc.id}
@@ -271,8 +274,14 @@ export default function ParkingMap() {
                 </Marker>
               );
             } else {
-              const carAvailable = Math.max(0, (loc.cap_car || 0) - (loc.occ_car || 0));
-              const bikeAvailable = Math.max(0, (loc.cap_bike || 0) - (loc.occ_bike || 0));
+              const carAvailable = Math.max(
+                0,
+                (loc.cap_car || 0) - (loc.occ_car || 0)
+              );
+              const bikeAvailable = Math.max(
+                0,
+                (loc.cap_bike || 0) - (loc.occ_bike || 0)
+              );
               return (
                 <Marker
                   key={loc.id}
