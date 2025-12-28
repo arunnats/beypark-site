@@ -5,7 +5,9 @@ import { Navbar } from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import { useUserStats } from "./helpers/useUserStats";
+import Schedule from "./pages/Schedule";
+import { useUserStats } from "./helpers/useUserStats"
+import FeedbackButton from "./components/FeedbackButton";
 
 trefoil.register();
 
@@ -60,10 +62,12 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
+              <Route path="/schedule" element={<Schedule />} />
             </Routes>
           </main>
         </div>
         <Footer />
+        <FeedbackButton />
       </div>
     </Router>
   );

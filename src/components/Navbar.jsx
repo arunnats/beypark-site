@@ -8,7 +8,7 @@ export function Navbar() {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
-    // { to: "/analytics", label: "Analytics" },
+    { to: "/schedule", label: "Schedule" },
     {
       to: "https://www.instagram.com/beyporeinternationalwaterfest/?hl=en",
       label: "Beypore Fest",

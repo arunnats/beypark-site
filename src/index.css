@@ -20,3 +20,40 @@ body,
 .leaflet-popup-content a:hover {
   color: #e5e7eb;
 }
+
+/* Add to your global CSS */
+@media (max-width: 640px) {
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .schedule-table {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 28px;
+  }
+  
+  h2 {
+    font-size: 22px;
+  }
+  
+  h3 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .feedback-modal-content {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+  
+  .star-rating svg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

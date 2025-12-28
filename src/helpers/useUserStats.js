@@ -95,5 +95,27 @@ export function useUserStats() {
     }
   };
 
-  return { initializeUserStats };
+  const submitFeedback = async (rating, suggestion) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Must be signed in to give feedback");
+
+      // Path: feedback/uid
+      const feedbackRef = ref(db, `feedback/${user.uid}`);
+
+      await set(feedbackRef, {
+        rating: Number(rating),
+        suggestion: suggestion.trim(),
+        timestamp: serverTimestamp(),
+        platform: "web",
+        uid: user.uid // Redundant but helpful for flattened exports
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Feedback Submission Error:", error);
+      throw error;
+    }
+  };
+  return { initializeUserStats , submitFeedback};
 }
