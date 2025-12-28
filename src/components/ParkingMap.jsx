@@ -246,7 +246,7 @@ export default function ParkingMap() {
                       <div className="space-y-2 mb-3">
                         <div className="flex justify-between items-center text-sm">
                           <span className="font-bold text-gray-700">
-                            Total Slots:
+                            Available Slots:
                           </span>
                           <span
                             className={`font-bold ${getStatusColor(
@@ -254,10 +254,7 @@ export default function ParkingMap() {
                               loc.cap_total || 0
                             )}`}
                           >
-                            {totalAvailable}{" "}
-                            <span className="text-black font-normal">
-                              / {loc.cap_total || 0}
-                            </span>
+                            {totalAvailable}
                           </span>
                         </div>
                       </div>

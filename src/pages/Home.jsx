@@ -12,7 +12,7 @@ export default function Home() {
 
         <p className="text-base md:text-2sxl font-medium md:font-semibold mb-6 md:mb-12 leading-relaxed">
           Live parking availability and directions for official Beypore Water
-          Festival parking lots.
+          Car Festival parking lots.
         </p>
 
         <div className="w-full flex justify-center mb-8 md:mb-16">
@@ -26,8 +26,11 @@ export default function Home() {
         </div>
 
         <p className="text-sm md:text-xl font-bold text-start md:text-center">
-          All official Beypore Water Fest parking locations are shown below with
-          real-time occupancy updates.
+          All official Beypore Water Fest car parking locations are shown below
+          with real-time occupancy updates.
+        </p>
+        <p className="text-sm md:text-xl font-extrabold text-start md:text-center">
+          Note: Parking Available for Cars only.
         </p>
       </div>
 

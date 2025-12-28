@@ -5,7 +5,7 @@ import { Navbar } from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import { useUserStats } from "./helpers/useUserStats"
+import { useUserStats } from "./helpers/useUserStats";
 
 trefoil.register();
 
@@ -54,7 +54,7 @@ export default function App() {
           loading ? "opacity-0" : "opacity-100"
         }`}
       >
-        <div className="relative z-[20] flex bg-[#f6f7f7] flex-1 mb-[48vh] md:mb-[40vh] rounded-b-2xl overflow-hidden">
+        <div className="relative z-[20] flex bg-[#f6f7f7] flex-1 mb-[54vh] md:mb-[40vh] rounded-b-2xl overflow-hidden">
           <Navbar />
           <main className="flex-1 ">
             <Routes>
