@@ -12,7 +12,7 @@ export default function Home() {
 
         <p className="text-base md:text-2sxl font-medium md:font-semibold mb-6 md:mb-12 leading-relaxed">
           Live parking availability and directions for official Beypore Water
-          Car Festival parking lots.
+          Festival Car parking lots.
         </p>
 
         <div className="w-full flex justify-center mb-8 md:mb-16">
